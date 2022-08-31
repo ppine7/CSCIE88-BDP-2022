@@ -1,0 +1,74 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'idea'
+    id 'eclipse'
+}
+
+group 'cscie88'
+version '1.0-SNAPSHOT'
+sourceCompatibility = 1.8
+targetCompatibility = 1.11
+mainClassName = "cscie88.hw1.MTFileGenerator"
+
+repositories {
+    mavenCentral()
+}
+ext {
+    slf4j_version = '1.7.30'
+    logback_version = '1.2.3'
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    implementation group: 'org.slf4j', name: 'slf4j-api', version: slf4j_version
+    // https://mvnrepository.com/artifact/ch.qos.logback/logback-core
+    implementation group: 'ch.qos.logback', name: 'logback-core', version: logback_version
+    // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
+    implementation group: 'ch.qos.logback', name: 'logback-classic', version: logback_version
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    exclude ("config")
+    manifest {
+        attributes(
+                "Main-Class": "$mainClassName",
+                "Implementation-Title": rootProject.name,
+                "Build-Time": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+run {
+    // support passing -Dsystem.property=value to bootRun task
+    systemProperties = System.properties
+}
+
+task("srcZip", type:Zip){
+    archiveBaseName = "sourceZip"
+    from (project.rootDir){
+        exclude ('*/*.iml')
+        exclude 'sourceZip*'
+        exclude ('*/*.zip')
+        exclude ('*/*.project')
+        exclude 'build'
+        exclude 'tools'
+        exclude '*.zip'
+        exclude '*.idea'
+        exclude 'out'
+        exclude 'META-iNF'
+    }
+    destinationDir project.rootDir
+}

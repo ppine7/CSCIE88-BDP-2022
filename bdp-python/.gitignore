@@ -1,4 +1,4 @@
-.gradle/
+venv/
 .classpath
 .project
 .settings
@@ -6,8 +6,5 @@
 *.iml
 *.ipr
 *.iws
+*.txt
 .DS_Store
-*/venv
-
-Docs
-
