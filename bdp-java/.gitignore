@@ -19,4 +19,5 @@ tools/*/*
 *.iws
 *.zip
 *.txt
+*.jar
 .DS_Store
