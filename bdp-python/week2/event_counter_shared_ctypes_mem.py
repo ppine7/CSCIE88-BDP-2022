@@ -46,7 +46,7 @@ def parse_line(line):
 
 if __name__ == '__main__':
     if logs_dir is None:
-        opt_dir = "logs/"
+        opt_dir = "../logs/"
     elif logs_dir.endswith("/"):
         opt_dir = logs_dir
     else:
