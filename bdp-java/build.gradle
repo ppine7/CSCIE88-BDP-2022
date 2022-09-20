@@ -8,8 +8,9 @@ plugins {
 group 'cscie88'
 version '1.0-SNAPSHOT'
 sourceCompatibility = 1.8
-targetCompatibility = 1.11
-mainClassName = "cscie88.hw1.MTFileGenerator"
+// targetCompatibility = 1.11
+targetCompatibility = 1.8
+mainClassName = "cscie88.hw4.EventCounterMRJob"
 
 repositories {
     mavenCentral()
@@ -30,7 +31,9 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
     // https://mvnrepository.com/artifact/io.lettuce/lettuce-core
     implementation group: 'io.lettuce', name: 'lettuce-core', version: '6.1.9.RELEASE'
-    
+    // dependencies for Hadoop MR client
+    implementation group: 'org.apache.hadoop', name: 'hadoop-client', version: '3.3.4'
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
@@ -40,7 +43,10 @@ test {
 }
 
 jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     exclude ("config")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
     manifest {
         attributes(
                 "Main-Class": "$mainClassName",
