@@ -6,6 +6,8 @@
 - Building and running the class Java sample.
 - Building and running the class python example.
 - AWS EMR Step Execution
+- S3 Buckets
+- AWS cli
 - Data processing on the linux cli
 - Book: ['Designing Data-Intensive Applications': Martin Kleppmann](https://www.amazon.com/Designing-Data-Intensive-Applications-Reliable-Maintainable/dp/1449373321/ref=sr_1_1?keywords=data+intensive+applications&qid=1663546252&sprefix=data+in%2Caps%2C78&sr=8-1)
 - Article: ['Map Reduce: Googles secret weapon'](https://hbr.org/2008/12/mapreduce-googles-secret-weapo)
