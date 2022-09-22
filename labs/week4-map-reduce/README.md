@@ -175,7 +175,7 @@ hadoop jar /usr/lib/hadoop/hadoop-streaming.jar \
 -file ./hours_reducer_demo.py \
 -mapper "python hours_mapper_demo.py" \
 -reducer "python hours_reducer_demo.py" \
--input s3://cscie88-bucket/ulysses.txt \
+-input s3://cscie88-bucket/logs \
 -output s3://cscie88-bucket/output/python/
 ```
 Output should look like this ...
