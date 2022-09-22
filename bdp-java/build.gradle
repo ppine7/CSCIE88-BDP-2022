@@ -10,7 +10,7 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = 1.8
 // targetCompatibility = 1.11
 targetCompatibility = 1.8
-mainClassName = "cscie88.hw4.EventCounterMRJob"
+mainClassName = "cscie88.week4.EventCounterMRJob"
 
 repositories {
     mavenCentral()
