@@ -1,0 +1,33 @@
+{
+  "type" : "record",
+  "name" : "Logs",
+  "namespace" : "output.avro",
+  "fields" : [ {
+    "name" : "uuid",
+    "type" : "string"
+  }, {
+    "name" : "timestamp",
+    "type" : "string"
+  }, {
+    "name" : "url",
+    "type" : "string"
+  }, {
+    "name" : "userid",
+    "type" : "string"
+  }, {
+    "name" : "country",
+    "type" : "string"
+  }, {
+    "name" : "browser",
+    "type" : "string"
+  }, {
+    "name" : "os",
+    "type" : "string"
+  }, {
+    "name" : "code",
+    "type" : "string"
+  }, {
+    "name" : "ttfb",
+    "type" : "string"
+  } ]
+}
