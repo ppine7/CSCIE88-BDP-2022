@@ -54,7 +54,8 @@ jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     exclude ("config")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
+    zip64 true
+    
     manifest {
         attributes(
                 "Main-Class": "$mainClassName",
