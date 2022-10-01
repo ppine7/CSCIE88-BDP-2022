@@ -51,11 +51,7 @@ test {
 }
 
 jar {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     exclude ("config")
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    zip64 true
-    
     manifest {
         attributes(
                 "Main-Class": "$mainClassName",
@@ -64,8 +60,9 @@ jar {
         )
     }
     from {
-        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
+
 }
 
 run {
