@@ -28,16 +28,16 @@ def parse_date(raw_time):
             return None
 
 
-#for line in sys.stdin:
-with open("../logs/file-input1.csv") as file_handle:
-    for line in file_handle:
-        # parse the log line - and get the timestamp only
-        # convert to a format we want - only date and hour - since we are only interested in the hour
-        parsed_line = parse_line(line)
-        if parsed_line is not None:
-            event_datetime = parse_date(parsed_line.timestamp)
-            if event_datetime is not None:
-                event_hour = datetime.strftime(event_datetime, "%y-%m-%d %H")
-                print ("%s\t%d" % (event_hour, 1))
+# with open("../logs/file-input1.csv") as file_handle:
+#     for line in file_handle:
+for line in sys.stdin:
+    # parse the log line - and get the timestamp only
+    # convert to a format we want - only date and hour - since we are only interested in the hour
+    parsed_line = parse_line(line.strip())
+    if parsed_line is not None:
+        event_datetime = parse_date(parsed_line.timestamp)
+        if event_datetime is not None:
+            event_hour = datetime.strftime(event_datetime, "%y-%m-%d %H")
+            print ("%s\t%d" % (event_hour, 1))
 
 print ("Mapper is done")

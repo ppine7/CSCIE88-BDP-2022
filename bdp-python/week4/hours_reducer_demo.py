@@ -6,8 +6,8 @@ import fileinput
 current_word = None
 current_count = 0
 
-for line in fileinput.input():
-#for line in sys.stdin:
+# for line in fileinput.input():
+for line in sys.stdin:
     try:
         word, count = line.strip().split('\t')
         if current_word:
