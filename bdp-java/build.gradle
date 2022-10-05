@@ -10,7 +10,7 @@ version '1.0-SNAPSHOT'
 sourceCompatibility = 1.8
 // targetCompatibility = 1.11
 targetCompatibility = 1.8
-mainClassName = "cscie88.hw4.EventCounterMRJob"
+mainClassName = "cscie88.week4.EventCounterMRJob"
 
 repositories {
     mavenCentral()
@@ -42,6 +42,12 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.spark/spark-sql
     implementation group: 'org.apache.spark', name: 'spark-sql_2.12', version: '3.1.2'
 
+    // dependencies for HBase
+    // https://mvnrepository.com/artifact/org.apache.spark/spark-sql
+    implementation group: 'org.apache.hbase', name: 'hbase', version: '2.4.4'
+    // https://mvnrepository.com/artifact/org.apache.spark/spark-sql
+    implementation group: 'org.apache.hbase', name: 'hbase-client', version: '2.4.4'
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
@@ -55,7 +61,8 @@ jar {
     exclude ("config")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     zip64 true
-    
+    exclude 'META-INF/*.DSA'
+
     manifest {
         attributes(
                 "Main-Class": "$mainClassName",
@@ -66,6 +73,7 @@ jar {
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+
 }
 
 run {
