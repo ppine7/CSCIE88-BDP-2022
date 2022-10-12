@@ -1,0 +1,62 @@
+###################### Filebeat Configuration Example #########################
+
+# This file is an example configuration file highlighting only the most common
+# options. The filebeat.reference.yml file from the same directory contains all the
+# supported options with more comments. You can use it as a reference.
+#
+# You can find the full configuration reference here:
+# https://www.elastic.co/guide/en/beats/filebeat/index.html
+
+# For more available modules and options, please see the filebeat.reference.yml sample
+# configuration file.
+
+# ============================== Filebeat inputs ===============================
+
+filebeat.inputs:
+# filestream is an input for collecting log messages from files.
+- type: filestream
+
+  # Change to true to enable this input configuration.
+  enabled: true
+
+  # Paths that should be crawled and fetched. Glob based paths.
+  paths:
+    - /Users/mpopova/Marina/harvard2021/CSCIE88-BDP/filebeat_docker/logs_input_txt/*.txt
+    #- c:\programdata\elasticsearch\logs\*
+
+
+# ================================== Outputs ===================================
+# Configure what output to use when sending the data collected by the beat.
+output.console:
+  enabled: false
+  pretty: true
+
+output.file:
+  path: "/Users/mpopova/Marina/harvard2021/CSCIE88-BDP/filebeat_docker/logs_output"
+  filename: fb_output
+  rotate_every_kb: 100
+  number_of_files: 2
+  #permissions: 0600
+  rotate_on_startup: true
+
+# ================================== Logging ===================================
+
+logging.metrics.enabled: false
+logging.enabled: true
+
+# Sets log level. The default log level is info.
+# Available log levels are: error, warning, info, debug
+logging.level: debug
+
+# At debug level, you can selectively enable logging only for some components.
+# To enable all selectors use ["*"]. Examples of other selectors are "beat",
+# "publisher", "service".
+#logging.selectors: ["*"]
+
+# ============================= X-Pack Monitoring ==============================
+# Filebeat can export internal metrics to a central Elasticsearch monitoring
+# cluster.  This requires xpack monitoring to be enabled in Elasticsearch.  The
+# reporting is disabled by default.
+
+# Set to true to enable the monitoring reporter.
+monitoring.enabled: false
