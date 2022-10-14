@@ -1,0 +1,81 @@
+---
+version: "2.1"
+networks:
+  lab7-demo:
+    name: lab7-demo-net
+    driver: bridge
+services:
+  # The environment variable "ELASTIC_VERSION" is used throughout this file to
+  # specify the version of the images to run. The default is set in the
+  # '.env' file in this folder. It can be overridden with any normal
+  # technique for setting environment variables, for example:
+  #
+  #   ELASTIC_VERSION=5.5.1 docker-compose up
+  #
+  # Additionally, the user can control:
+  #   * the total memory assigned to the ES container through the variable ES_MEM_LIMIT e.g. ES_MEM_LIMIT=2g
+  #   * the memory assigned to the ES JVM through the variable ES_JVM_HEAP e.g. ES_JVM_SIZE=1024m
+  #   * the password used for the elastic, logstash_system and kibana accounts through the variable ES_PASSWORD
+  #   * the mysql root password through the var MYSQL_ROOT_PASSWORD
+  #   * the default index pattern used in kibana via the var DEFAULT_INDEX_PATTERN
+  #   * the ES heap size through tt
+  # REF: https://docs.docker.com/compose/compose-file/#variable-substitution
+  #
+  #Filebeat container
+  filebeat:
+    container_name: filebeat
+    hostname: filebeat
+    user: root
+    image: "docker.elastic.co/beats/filebeat:8.4.3"
+    volumes:
+      #Mount the apache2 logs into the filebeat container so we can access and index them using the filebeat
+      - apachelog:/apache2/logs/:ro
+      #Mount the filebeat configuration so users can make edit
+      - ./config/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      #Mount the prospectors directory. Users can in turn add propspectors to this directory and they will be dynamically loaded
+      #- ./config/beats/filebeat/prospectors.d/:/usr/share/filebeat/prospectors.d/
+      #Mount the apache2 logs into the filebeat container so we can access and index them using the filebeat apache2 module
+      # - ./logs/apache2/:/var/log/apache2/
+      #Mount the hosts system log directory. This represents the logs of the VM hosting docker. Consumed by the filebeat system module.
+      # - /var/log/:/var/log/host/:ro
+      #Mount the docker logs for indexing by the custom prospector ./config/filebeat/prospectors.d
+      #- /var/lib/docker/containers:/hostfs/var/lib/docker/containers
+      #Named volume fsdata. This is used to persist the registry file between restarts, so to avoid data duplication
+      #- fbdata:/usr/share/filebeat/data/
+    networks:
+      - lab7-demo
+#    command: filebeat
+    restart: on-failure
+    command: filebeat -e -d "*"
+    deploy:
+      mode: global
+    depends_on:
+      #wait for the these services to come up. This ensures the logs are available and ES exists for indexing
+      apache: { condition: service_started }
+
+  #Apache2 container
+  apache:
+    container_name: apache2
+    hostname: apache2
+    build: ./apache2
+#    image: httpd:2.4
+    ports:
+      - 80:80
+#    image: 'bitnami/apache:latest'
+    networks:
+      - lab7-demo
+#    ports:
+#      - '80:8080'
+#      - '443:8443'
+    volumes:
+      - apachelog:/usr/local/apache2/logs/
+  #     - ./apache2/conf/:/usr/local/apache2/conf/
+  #     - /usr/local/apache2/conf/:./apache2/conf/
+    #volumes:
+      #Logs are mounted to a relative path. These are also accessed by Filebeat and consumed by the fliebeat
+  #     - ./logs/apache2/:/var/log/apache2/
+
+volumes:
+  #Apache logs data
+  apachelog:
+    driver: local

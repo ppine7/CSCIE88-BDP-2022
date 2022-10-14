@@ -20,7 +20,7 @@ filebeat.inputs:
 
   # Paths that should be crawled and fetched. Glob based paths.
   paths:
-    - ./input_logs/*.txt
+    - /usr/share/filebeat/input_logs/*.txt
     #- c:\programdata\elasticsearch\logs\*
 
 
@@ -31,7 +31,7 @@ output.console:
   pretty: true
 
 output.file:
-  path: "./output_logs"
+  path: "/usr/share/filebeat/logs_output"
   filename: fb_output
   rotate_every_kb: 100
   number_of_files: 7
@@ -100,3 +100,4 @@ monitoring.enabled: false
 
 # This allows to enable 6.7 migration aliases
 #migration.6_to_7.enabled: true
+

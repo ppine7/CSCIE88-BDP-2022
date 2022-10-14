@@ -1,0 +1,18 @@
+#Apache2 Module to consume to access and error logs from mounted volume
+filebeat.inputs:
+- type: filestream
+  # Change to true to enable this input configuration.
+  enabled: true
+  paths:
+    - "/apache2/logs/*"
+  #fields:
+  #  apache: true
+  #fields_under_root: true
+#- module: apache2
+#  access:
+#    var.paths: ["/var/log/apache2/access.log*"]
+#  error:
+#    var.paths: ["/var/log/apache2/error.log*"]
+output.file:
+  path: "/tmp/filebeat"
+  filename: filebeat
