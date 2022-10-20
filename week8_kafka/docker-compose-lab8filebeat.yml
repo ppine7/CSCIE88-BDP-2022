@@ -1,0 +1,53 @@
+version: "3.8"
+networks:
+  default:
+    external:
+      name: lab8-demo-net
+#  lab8-demo:
+#    name: lab8-demo-net
+#    driver: bridge
+services:
+  #Filebeat container
+  filebeat:
+    container_name: filebeat
+    hostname: filebeat
+    user: root
+    image: "docker.elastic.co/beats/filebeat:8.1.0"
+    volumes:
+      #Mount the apache2 logs into the filebeat container so we can access and index them using the filebeat
+      - apachelog:/usr/local/apache2/logs/
+      #Mount the filebeat configuration so users can make edit
+      - ./config/filebeat.yml:/usr/share/filebeat/filebeat.yml
+#    networks:
+#      - lab8-demo
+    restart: on-failure
+    command: filebeat -d "*"
+    deploy:
+      mode: global
+    depends_on:
+      #wait for the these services to come up and healthy.
+      apache2: { condition: service_healthy }
+
+  #Apache2 container
+  apache2:
+    container_name: apache2
+    hostname: apache2
+    build: ./apache2
+#    image: httpd:2.4
+    ports:
+      - 80:80
+#    image: 'bitnami/apache:latest'
+#    healthcheck:
+#      test: ["CMD-SHELL", "apt-get update -y && apt-get install -y curl && curl --fail http://localhost || exit 1"]
+#      interval: 3s
+#      timeout: 10s
+#      retries: 3
+#      start_period: 0s
+#    networks:
+#      - lab8-demo
+    volumes:
+      - apachelog:/usr/local/apache2/logs/
+#      - ./apache2/httpd.conf:/usr/local/apache2/conf/httpd.conf
+volumes:
+  apachelog:
+    driver: local
