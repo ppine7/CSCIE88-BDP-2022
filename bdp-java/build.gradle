@@ -18,6 +18,7 @@ repositories {
 ext {
     slf4j_version = '1.7.30'
     logback_version = '1.2.3'
+    kafka_version = '3.3.1'
 }
 
 dependencies {
@@ -48,6 +49,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.spark/spark-sql
     implementation group: 'org.apache.hbase', name: 'hbase-client', version: '2.4.4'
 
+    // dependencies for kafka
+    implementation group: 'org.apache.kafka', name: 'kafka-clients', version: kafka_version
+
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
@@ -57,6 +61,7 @@ test {
 }
 
 jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     exclude ("config")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     zip64 true
@@ -70,7 +75,7 @@ jar {
         )
     }
     from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 
 }
