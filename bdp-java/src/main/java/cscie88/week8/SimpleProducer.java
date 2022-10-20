@@ -1,61 +1,72 @@
 package cscie88.week8;
 
 import java.util.Properties;
-import java.time.Duration;
-import java.util.Arrays;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 
-public class SimpleConsumer {
-	private static final Logger logger = LoggerFactory.getLogger(SimpleConsumer.class);
+public class SimpleProducer {
+
+	private static final Logger logger = LoggerFactory.getLogger(SimpleProducer.class);
+	public static final String INFINITE = "infinite";
 	private Properties props = new Properties();
+	private Producer<String, String> producer;
 
-
-	KafkaConsumer<String, String> consumer;
-
-	public SimpleConsumer(String bootStrapServer, String topicName) {
+	public SimpleProducer(String bootStrapServer) {
+		// Assign localhost id
 		props.put("bootstrap.servers", bootStrapServer);
-		props.put("group.id", "java-consumer");
-		props.put("enable.auto.commit", "true");
-		props.put("auto.commit.interval.ms", "1000");
-		props.put("session.timeout.ms", "30000");
-		props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-		props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-		props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
-		consumer = new KafkaConsumer<>(props);
 
-		// subscribe to a list of topics
-		consumer.subscribe(Arrays.asList(topicName));
-		logger.info("SimpleConsumer initialized Ok and subscribed to topic: {}", topicName);
+		// Set acknowledgements for producer requests.
+		props.put("acks", "all");
+		// If the request fails, the producer can automatically retry,
+		props.put("retries", 0);
+		// Specify buffer size in config
+		props.put("batch.size", 16384);
+		props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+		props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
+		producer = new KafkaProducer<String, String>(props);
+		logger.info("SimpleProducer initialized Ok");
 	}
 
-	public void run() {
-		while (true) {
-			ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1));
-			if (records.isEmpty()) {
-				logger.info("called poll() - no records read");
-			} else {
-				logger.info("called poll() - processing records ...");
-			}
-			for (ConsumerRecord<String, String> record : records) {
-				// print the offset,key and value for the consumer records.
-				logger.info("Received event: offset = {},partition = {},  key = {}, value = {}\n", record.offset(),
-						record.partition(), record.key(), record.value());
-			}
-		}
+	public void produceEvents(Integer numberOfEvents, String topicName, Long produceSeconds) throws InterruptedException {
+		int currentEventCount = 0;
+		do {
+			String messageBody = "test_event -->" + currentEventCount;
+			producer.send(new ProducerRecord<>(topicName, Integer.toString(currentEventCount), messageBody));
+			logger.info("Produced message successfully: {}", messageBody);
+			TimeUnit.SECONDS.sleep(produceSeconds);
+			currentEventCount++;
+		} while (numberOfEvents == null || currentEventCount < numberOfEvents);
+		producer.close();
 	}
 
 	public static void main(String[] args) throws Exception {
 		String topicName = System.getProperty("topic", "java_test_topic");
 		String bootStrapServer = System.getProperty("server", "localhost:9092");
-		logger.info("Consuming from : Server  -->" + bootStrapServer +", Topic -->" + topicName);
-		SimpleConsumer simpleConsumer = new SimpleConsumer(bootStrapServer, topicName);
-		simpleConsumer.run();
+		String eventCountString = System.getProperty("eventCount", INFINITE);
+		String produceSecondsString = System.getProperty("sec", "5");
+		logger.info("Producing to : Server  -->" + bootStrapServer +", Topic -->" + topicName);
+		SimpleProducer simpleProducer = new SimpleProducer(bootStrapServer);
+		try {
+			Long produceSeconds = Long.parseLong(produceSecondsString);
+			if(INFINITE.equals(eventCountString)){
+				simpleProducer.produceEvents(null, topicName,produceSeconds);
+			}else{
+				int eventCountInt = Integer.parseInt(eventCountString);
+				simpleProducer.produceEvents(eventCountInt, topicName, produceSeconds);
+			}
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }
