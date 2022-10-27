@@ -43,7 +43,7 @@ docker-compose up -d
 ```
 - You can check your services are running by running 
 ```
-ps --format "{{.ID}} {{.Names}} {{.State}} {{.Ports}} {{.Status}}"
+docker ps --format "{{.ID}} {{.Names}} {{.State}} {{.Ports}} {{.Status}}"
 ```
 - you should see 
 ```
@@ -140,7 +140,7 @@ root@jobmanager:/opt/flink#
 ```
 - Run the flink python batch job with 
 ```
-run --detached -py examples/python/datastream/word_count.py --output file:///flink-data/results-python
+bin/flink run --detached -py examples/python/datastream/word_count.py --output file:///flink-data/results-python
 
 ```
 - should see 
@@ -344,19 +344,23 @@ f83062a1b2eb497e9225430b53a223f7 2022-09-03T14:20:05.810998800Z http://example.c
 cd java/p2_flink_kafka_test
 gradle build
 # copy jar to flink directory
-cp build/libs/p2_flink_kafka_test-1.0-SNAPSHOT.jar ../docker/flink-data
+cp build/libs/p2_flink_kafka_test-1.0-SNAPSHOT.jar ../../docker/flink-data
 ```
 - submit the job to the flink job manager
 ```
 # connect to the flink job manager and submit the job
 docker exec -it jobmanager bash
 
-bin/flink run --detached \
-/flink-data/p2_flink_kafka_test-1.0-SNAPSHOT.jar \
+bin/flink run --detached -c cscie88.KafkaSourceApp /flink-data/p2_flink_kafka_test-1.0-SNAPSHOT.jar
 ```
 - check the results topic (also check the user interface http://ip:8081)
 ```
 docker exec broker1 kafka-console-consumer --topic p2_output --bootstrap-server localhost:9092
+```
+- Note, this job runs continuously. To cancel it select it in the UI and select "Cancel Job"
+- or run this command
+```
+./bin/flink cancel <job-id>
 ```
 
 
@@ -365,10 +369,15 @@ docker exec broker1 kafka-console-consumer --topic p2_output --bootstrap-server 
 ```
 # from week9_flink directory
 cp python/p2_kafka-source-app.py ./docker/flink-data
-# submit the python job
-run --detached -py /flink-data/p2_kafka-source-app.py
 ```
-
+- submit the python job, first connect to the jobmanager
+```
+docker exec -it jobmanager bash
+```
+- then submit the python job
+```
+./bin/flink run --detached -py /flink-data/p2_kafka-source-app.py
+```
 - check the results topic (also check the user interface http://ip:8081)
 ```
 docker exec broker1 kafka-console-consumer --topic p2_output --bootstrap-server localhost:9092
