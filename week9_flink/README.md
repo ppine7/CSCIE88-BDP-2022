@@ -273,6 +273,9 @@ if __name__ == '__main__':
 
 ## Create the topics required by the assignment
 
+![hw9](https://github.com/bmullan-pivotal/CSCIE88-BDP-2022/blob/main/week9_flink/hw9.png?raw=true)
+
+
 ```
 docker exec broker1 kafka-topics --create --topic p2_input --bootstrap-server localhost:9092
 
