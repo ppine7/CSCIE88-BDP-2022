@@ -1,0 +1,123 @@
+notes
+
+mvn archetype:generate -DgroupId=org.cscie88.kafka -DartifactId=hw8 -DarchetypeArtifactId=maven-archetype-quickstart -DarchetypeVersion=1.4 -DinteractiveMode=false
+
+
+bootstrap servers, comma delimited list of server:port'server
+
+ kafkaProps.put("bootstrap.servers", "broker1:9092,broker2:9092");
+
+
+ ssh -i ccsie88-assignment2.pem -L 22181:localhost:22181 -L 32181:localhost:32181 -L 42181:localhost:42181 -L 29092:localhost:29092 -L 39092:localhost:39092 -L 49092:localhost:49092 ec2-user@ec2-18-224-135-159.us-east-2.compute.amazonaws.com
+
+
+ec2 single broker setup.
+
+8  mkdir Downloads
+    9  mkdir ~/kafka && cd ~/kafka
+   10  curl https://downloads.apache.org/kafka/3.1.0/kafka_2.13-3.1.0.tgz -o ~/Downloads/kafka.tgz
+   11  tar -xvf ~/Downloads/kafka.tgz --strip 1
+   12  nano config/server.properties
+mkdir logs
+
+sudo nano /etc/systemd/system/zookeeper.service
+
+cat /etc/systemd/system/zookeeper.service
+    [Unit]
+    Requires=network.target remote-fs.target
+    After=network.target remote-fs.target
+
+    [Service]
+    Type=simple
+    User=ec2-user
+    ExecStart=/home/ec2-user/kafka/bin/zookeeper-server-start.sh /home/ec2-user/kafka/config/zookeeper.properties
+    ExecStop=/home/ec2-user/kafka/bin/zookeeper-server-stop.sh
+    Restart=on-abnormal
+
+    [Install]
+    WantedBy=multi-user.target
+
+
+sudo nano /etc/systemd/system/kafka.service
+
+cat /etc/systemd/system/kafka.service
+    [Unit]
+    Requires=zookeeper.service
+    After=zookeeper.service
+
+    [Service]
+    Type=simple
+    User=ec2-user
+    ExecStart=/bin/sh -c '/home/ec2-user/kafka/bin/kafka-server-start.sh /home/ec2-user/kafka/config/server.properties > /home/ec2-user/kafka/kafka.log 2>&1'
+    ExecStop=/home/ec2-user/kafka/bin/kafka-server-stop.sh
+    Restart=on-abnormal
+
+    [Install]
+    WantedBy=multi-user.target
+
+sudo systemctl start kafka
+sudo systemctl status kafka
+
+sudo systemctl enable kafka
+sudo systemctl enable zookeeper
+
+
+# create topic
+
+bin/kafka-topics.sh --create --topic quickstart-events --bootstrap-server localhost:9092
+bin/kafka-topics.sh --describe --topic quickstart-events --bootstrap-server localhost:9092
+bin/kafka-console-producer.sh --topic quickstart-events --bootstrap-server localhost:9092
+
+bin/kafka-topics.sh --describe --topic quickstart-events --bootstrap-server localhost:9092
+bin/kafka-console-consumer.sh --topic quickstart-events --from-beginning --bootstrap-server localhost:9092
+
+
+bin/kafka-topics.sh --create --topic problem1 --bootstrap-server localhost:29092,localhost:39092,localhost:49092 --partitions --replication-factor 2
+
+bin/kafka-topics.sh --bootstrap-server localhost:9092,localhost:9093,localhost:9094 --create --topic problem1 --partitions 2 --replication-factor 2
+
+
+bin/kafka-console-producer.sh --topic problem1 --bootstrap-server localhost:29092,localhost:39092,localhost:49092
+
+bin/kafka-dump-log.sh --topic problem1 --bootstrap-server localhost:29092,localhost:39092,localhost:49092
+
+
+# check connectivity
+
+nc -vz localhost 22181
+nc -vz localhost 32181
+nc -vz localhost 42181
+nc -vz localhost 29092
+nc -vz localhost 39092
+nc -vz localhost 49092
+
+
+scp -i ../ccsie88-assignment2.pem ~/Downloads/Lab8\ files.zip ec2-user@ec2-18-224-135-159.us-east-2.compute.amazonaws.com
+
+ssh -i ccsie88-assignment2.pem ec2-user@ec2-18-224-135-159.us-east-2.compute.amazonaws.com
+
+docker run -d -p 8000:80 --mount type=bind,source="$(pwd)"/apachelog,target=/usr/local/apache2/logs httpd:latest
+
+--mount type=bind,source="$(pwd)"/target,target=/app,
+
+
+ ssh -i ccsie88-assignment2.pem -L 2181:localhost:2181 -L 9092:localhost:9092 -L 9093:localhost:9093 -L 9094:localhost:9094 ec2-user@ec2-18-224-135-159.us-east-2.compute.amazonaws.com
+
+
+bin/kafka-topics.sh --create --topic problem2 --bootstrap-server localhost:9092,localhost:9093,localhost:9094
+
+bin/kafka-console-consumer.sh --topic problem2 --from-beginning --bootstrap-server localhost:9092,localhost:9093,localhost:9094
+
+
+producer 
+
+java -classpath ./target/hw8-1.0-SNAPSHOT.jar -Dserver=localhost:9092,localhost:9093,localhost:9094 -Dtopic=problem3 -Dsec=1 org.cscie88.kafka.SimpleProducer
+
+java -classpath ./target/hw8-1.0-SNAPSHOT.jar -DinputFile=../../assignment3/logs/file-input1.csv -Dserver=pkc-419q3.us-east4.gcp.confluent.cloud:9092 -Dtopic=problem3 -Dsec=1 org.cscie88.kafka.SimpleProducer
+
+consumer
+
+java -classpath ./target/hw8-1.0-SNAPSHOT.jar -Dserver=localhost:9092,localhost:9093,localhost:9094 -Dtopic=problem3 org.cscie88.kafka.SimpleConsumer
+
+java -classpath ./target/hw8-1.0-SNAPSHOT.jar -Dgroup.id=consumer-1 -Dserver=localhost:9092,localhost:9093,localhost:9094 -Dtopic=problem3 org.cscie88.kafka.SimpleConsumer
+java -classpath ./target/hw8-1.0-SNAPSHOT.jar -Dgroup.id=consumer-1 -Dserver=localhost:9092,localhost:9093,localhost:9094 -Dtopic=problem3 org.cscie88.kafka.SimpleConsumer
