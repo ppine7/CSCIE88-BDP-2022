@@ -82,6 +82,8 @@ docker logs broker1 -f
 ```
 # from week9_flink directory
 cd docker
+# change the ownership of the flink-data directory (if running on ubuntu)
+sudo chown ubuntu:ubuntu flink-data
 # download a sample text file
 curl -o flink-data/ulysses.txt https://www.gutenberg.org/files/4300/4300-0.txt
 # note: the 'flink-data' directory is available in the flink image as '/flink-data'
