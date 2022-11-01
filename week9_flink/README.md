@@ -39,6 +39,11 @@ https://github.com/ververica/flink-training-exercises/blob/master/src/main/java/
 ```
 # from the week9_flink directory
 cd docker
+# create a data directory which will mounted by docker as a volume
+mkdir flink-data
+# open the permissions for the directory
+sudo chmod -R 777 flink-data
+# start the docker services
 docker-compose up -d
 ```
 - You can check your services are running by running 
@@ -82,8 +87,6 @@ docker logs broker1 -f
 ```
 # from week9_flink directory
 cd docker
-# change the ownership of the flink-data directory (if running on ubuntu)
-sudo chown ubuntu:ubuntu flink-data
 # download a sample text file
 curl -o flink-data/ulysses.txt https://www.gutenberg.org/files/4300/4300-0.txt
 # note: the 'flink-data' directory is available in the flink image as '/flink-data'
@@ -135,6 +138,7 @@ the 15092
 ```
 # from week9_flink directory
 cd docker
+
 # note: the 'flink-data' directory is available in the flink image as '/flink-data'
 docker exec -it jobmanager bash
 #
