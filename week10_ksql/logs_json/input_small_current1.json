@@ -1,0 +1,4 @@
+{ "uuid":"41daf40b28bd48958eb870bc65b8d78a1","eventTimestamp":"2022-09-03T13:48:59.570998800Z","url":"http://example.com/?url=124","userId":"user-035","country":"GN","uaBrowser":"IE","uaOs":"windows","responseCode":207,"ttfb":0.6509  }
+{ "uuid":"1928c255065b49e0b87a70314076fdac2","eventTimestamp":"2022-09-03T13:49:25.490998800Z","url":"http://example.com/?url=056","userId":"user-080","country":"BW","uaBrowser":"Firefox","uaOs":"windows","responseCode":402,"ttfb":0.3237  }
+{ "uuid":"d3d08e7edb8443e0a2f54e8a0851abc93","eventTimestamp":"2022-09-03T13:49:51.410998800Z","url":"http://example.com/?url=066","userId":"user-068","country":"BT","uaBrowser":"Firefox","uaOs":"windows","responseCode":207,"ttfb":0.4069  }
+{ "uuid":"87bda216231c41c4afdeef2e1c5f26024","eventTimestamp":"2022-09-03T13:50:17.330998800Z","url":"http://example.com/?url=167","userId":"user-068","country":"EH","uaBrowser":"Opera","uaOs":"Linux","responseCode":400,"ttfb":0.2107  }
