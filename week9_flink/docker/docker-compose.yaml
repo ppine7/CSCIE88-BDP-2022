@@ -6,8 +6,8 @@ networks:
 services:
   #Zookeeper container
   zookeeper:
-    image: confluentinc/cp-zookeeper:6.2.1
-    # image: confluentinc/cp-zookeeper:7.2.2.arm64
+    # image: confluentinc/cp-zookeeper:6.2.1
+    image: confluentinc/cp-zookeeper:7.2.2.arm64
     hostname: zookeeper
     container_name: zookeeper
     networks:
@@ -20,8 +20,8 @@ services:
 
   #Kafka container node1
   broker1:
-    image: confluentinc/cp-server:6.2.1
-    # image: confluentinc/cp-server:7.2.2.arm64
+    # image: confluentinc/cp-server:6.2.1
+    image: confluentinc/cp-server:7.2.2.arm64
     hostname: broker1
     container_name: broker1
     healthcheck:
