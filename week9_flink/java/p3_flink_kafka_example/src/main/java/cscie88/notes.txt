@@ -1,0 +1,152 @@
+package cscie88;
+
+import org.apache.flink.api.common.serialization.SimpleStringSchema;
+
+import org.apache.flink.api.java.utils.MultipleParameterTool;
+import org.apache.flink.connector.kafka.sink.KafkaRecordSerializationSchema;
+import org.apache.flink.connector.kafka.sink.KafkaSink;
+import org.apache.flink.connector.kafka.source.KafkaSource;
+import org.apache.flink.util.Collector;
+import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.windowing.ProcessAllWindowFunction;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
+import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+
+import java.time.Duration;
+
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
+
+/**
+ * Hello world!
+ *
+ */
+public class KafkaSourceApp 
+{
+    /**
+     * Implements the string tokenizer that splits sentences into words as a user-defined
+     * FlatMapFunction. The function takes a line (String) and splits it into multiple pairs in the
+     * form of "(word,1)" ({@code Tuple2<String, Integer>}).
+     */
+    public static final class Tokenizer
+            // will convert String -> String
+            implements FlatMapFunction<String, String> {
+
+        @Override
+        // public void flatMap(String value, Collector<Tuple2<String, Integer>> out) {
+        public void flatMap(String value, Collector<String> out) {
+            // out.collect(new Tuple2<>(value,1));
+            out.collect(value);
+        }
+    }
+
+    // example of a tokenizer that converts incoming string log events to LogLine instances
+    public static final class LogLineTokenizer
+        // https://nightlies.apache.org/flink/flink-docs-master/api/java/org/apache/flink/api/common/functions/FlatMapFunction.html    
+        // will convert String -> LogLine
+        implements FlatMapFunction<String, LogLine> {
+        @Override
+        public void flatMap(String value, Collector<LogLine> out) {
+            out.collect(LogLineParser.parseLine(value.replace(" ",",")));
+        }
+    }
+
+    // example of a process all window function
+    private static class CountLogEvents extends ProcessAllWindowFunction<String, Integer, TimeWindow> {
+        @Override
+        public void process( Context ctx, Iterable<String> logEvents, Collector<Integer> out) throws Exception {
+            int counter = 0;
+            for (String logEvent : logEvents ) {
+                counter ++;
+            }
+            out.collect( Integer.valueOf(counter) );
+        }
+    }
+
+    // example of a reduce function
+    // returns the log with the longest ttfb
+    public static class ReduceMaxTTFB implements ReduceFunction<String> {
+
+        // https://stackoverflow.com/questions/1181969/java-get-last-element-after-split
+        public static <T> T last(T[] array) {
+            return array[array.length - 1];
+        }
+
+        private float ttfbValue(String value) {
+            return Float.valueOf(last(value.split(","))).floatValue();
+        }
+
+        @Override
+        public String reduce(String value1, String value2) throws Exception {
+            // TODO Auto-generated method stub
+            return ttfbValue(value2) > ttfbValue(value1) ? value2 : value1;
+        }
+        
+    }
+
+    // static final CountLogEvents windowLogCounter = new CountLogEvents<String, Integer, TimeWindow>();
+
+    public static void main( String[] args ) throws Exception
+    {
+        final MultipleParameterTool params = MultipleParameterTool.fromArgs(args);
+
+        // set up the execution environment
+        // final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+
+        // make parameters available in the web interface
+        env.getConfig().setGlobalJobParameters(params);
+
+        KafkaSource<String> source = KafkaSource.<String>builder()
+            .setBootstrapServers("broker1:29092")
+            .setTopics("hw9events")
+            .setGroupId("my-group")
+            .setStartingOffsets(OffsetsInitializer.latest())
+            // .setStartingOffsets(OffsetsInitializer.earliest())
+            .setValueOnlyDeserializer(new SimpleStringSchema())
+            .build();
+
+        KafkaSink<String> sink = KafkaSink.<String>builder()
+            .setBootstrapServers("broker1:29092")
+            .setRecordSerializer(KafkaRecordSerializationSchema.builder()
+                .setTopic("hw9results")
+                .setValueSerializationSchema(new SimpleStringSchema())
+                .build()
+            )
+            // .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
+            .build();
+
+        // StreamingFileSink<String> streamingFileSink = StreamingFileSink.forRowFormat(
+        //     new Path(params.get("output")), new SimpleStringEncoder<String>())
+        //         .withBucketAssigner(new BasePathBucketAssigner<>())
+        //         .build();
+
+
+        // examples
+        // https://github.com/ververica/flink-training-exercises/blob/master/src/main/java/com/ververica/flinktraining/examples/datastream_java/windows/WhyLate.java#L60
+        DataStream<String> stream = env.fromSource(
+            source, 
+            WatermarkStrategy.forBoundedOutOfOrderness(Duration.ofSeconds((5))), 
+            "kafka-source");
+
+        // https://nightlies.apache.org/flink/flink-docs-master/api/java/org/apache/flink/streaming/api/datastream/AllWindowedStream.html
+
+        stream.flatMap(new Tokenizer())
+        .windowAll(TumblingEventTimeWindows.of(Time.seconds(5)))
+        // .reduce(new ReduceMaxTTFB())
+        .process(new CountLogEvents())
+        .map( i -> new String("Count:"+i))
+        .sinkTo(sink);
+
+        // .keyBy(value -> value.f0)
+		// .sum(1)
+        // .windowAll()
+        env.execute("hw9events-kafka-source");
+    }
+
+
+}
