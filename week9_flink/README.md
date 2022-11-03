@@ -8,6 +8,7 @@
 - Running the supplied java kafka producer
 - Building and running a java flink kafka source app.
 - Building and running a python flink kafka source app.
+- Running and testing the P3 example python program
 - (Optional) Building the pyflink docker image.
 
 ## Useful links
