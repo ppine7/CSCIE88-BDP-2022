@@ -480,7 +480,7 @@ ubuntu@ip-172-31-16-46:~$ docker exec broker1 kafka-console-consumer --topic p3_
 {"uaOs":"Mac","window_end":"2022-11-03 20:51:50","cnt":9}
 {"uaOs":"Linux","window_end":"2022-11-03 20:51:50","cnt":10}
 ```
-- To run as a flink job in the cluster see the [example](python/p3_kafka-source-example.py-old) above. 
+- To run as a flink job in the cluster see the [example]([python/p3_kafka-source-example.py-old](https://github.com/ppine7/CSCIE88-BDP-2022/blob/main/week9_flink/README.md#running-flink-wordcount-example-python) above. 
 
 
 
