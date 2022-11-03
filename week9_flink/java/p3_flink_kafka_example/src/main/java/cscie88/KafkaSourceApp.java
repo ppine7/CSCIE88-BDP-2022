@@ -97,7 +97,7 @@ public class KafkaSourceApp
         // if running localy then it is localhost:9092
         KafkaSource<String> source = KafkaSource.<String>builder()
             .setBootstrapServers("localhost:9092")
-            .setTopics("p2_input")
+            .setTopics("p3_input")
             .setGroupId("test")
             .setStartingOffsets(OffsetsInitializer.latest())
             // .setStartingOffsets(OffsetsInitializer.earliest())
@@ -108,7 +108,7 @@ public class KafkaSourceApp
         KafkaSink<String> sink = KafkaSink.<String>builder()
             .setBootstrapServers("localhost:9092")
             .setRecordSerializer(KafkaRecordSerializationSchema.builder()
-                .setTopic("p2_output")
+                .setTopic("p3_output")
                 .setValueSerializationSchema(new SimpleStringSchema())
                 .build()
             )
@@ -116,6 +116,8 @@ public class KafkaSourceApp
 
         // set job parallelism
         env.setParallelism(1);
+
+        System.out.println("starting stream");
 
         // create the stream from the kafka source
         DataStream<String> stream = env.fromSource(
@@ -134,10 +136,10 @@ public class KafkaSourceApp
         stream
             // convert log string to LogLine
             .flatMap(new LogTokenizer())
-            // convert LogLine to Tuple<url,1>
-            .flatMap(new UrlTokenizer())
-            // key by url
-            .keyBy(new TupleUrlKeySelector())
+            // convert LogLine to Tuple<uaos,1>
+            .flatMap(new UaOsTokenizer())
+            // key by UaOS
+            .keyBy(new TupleUaOsKeySelector())
             // window
             .window(TumblingEventTimeWindows.of(Time.seconds(5)))
             // sum the contents of window
@@ -146,7 +148,7 @@ public class KafkaSourceApp
             .map(new TupleSerializer())
             // name it for job output
             .name("kafka-sink")
-            // .addSink(new PrintSinkFunction<String>())
+            // .addSink(new PrintSinkFunction<String>());
             .sinkTo(sink);
         
         // sink to print output to stdout
