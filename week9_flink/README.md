@@ -410,12 +410,17 @@ docker exec broker1 kafka-console-producer --topic p3_input --bootstrap-server l
 ```
 Then copy and paste json messages. This is useful for testing as you can edit the messages to test with different values. For sample input review the files in the /week10_ksql/logs_json folder
 - Option 2: Generate the messages from a json input file.
-A script 'python-json-producer.sh' is provided which will read one of the json logs file into the topic 'p3_input'. You can edit the script too change the file, message send rate, topic etc.
+A script 'python-json-producer.sh' is provided which will read one of the json logs file into the topic 'p3_input'. You can edit the script to change the file, message send rate, topic etc.
 ```
 # install utilities
 sudo apt-get install kafkacat && sudo apt-get install pv
 # run the script
 ./python-json-producer.sh
+```
+Should see ...
+```
+ubuntu@ip-172-31-16-46:~/nov-3/CSCIE88-BDP-2022/week9_flink/python$ ./python-json-producer.sh 
+26.2KiB 0:00:12 [2.16KiB/s] [                              <=>                                                                                                   ] 
 ```
  
  
