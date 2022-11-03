@@ -8,6 +8,7 @@
 - Running the supplied java kafka producer
 - Building and running a java flink kafka source app.
 - Building and running a python flink kafka source app.
+- Running and testing the P3 example python program
 - (Optional) Building the pyflink docker image.
 
 ## Useful links
@@ -392,6 +393,98 @@ docker exec -it jobmanager bash
 docker exec broker1 kafka-console-consumer --topic p2_output --bootstrap-server localhost:9092
 ```
 
+## Running and testing the P3 example python program
+In order to test and run the p3_flink-kafka-python.py program we will follow this sequence. 
+1. Copy the program so we can run it from our docker image (if you have installed your own pyflink environment this step is not required)
+2. Setup to produce json kafka messages (either sending individual messages or running a script to produce them).
+3. Running our python program and inspecting the results
+
+### 1. Copy the program
+```
+# from the week9_flink directory
+cp python/p3_kafka-source-example.py docker/flink-data
+```
+### 2. Generate test messages on the kafka topic
+- Option 1: Create messages manually by running the kafka-console-producer
+```
+docker exec broker1 kafka-console-producer --topic p3_input --bootstrap-server localhost:9092
+```
+Then copy and paste json messages. This is useful for testing as you can edit the messages to test with different values. For sample input review the files in the /week10_ksql/logs_json folder
+- Option 2: Generate the messages from a json input file.
+A script 'python-json-producer.sh' is provided which will read one of the json logs file into the topic 'p3_input'. You can edit the script to change the file, message send rate, topic etc.
+```
+# install utilities
+sudo apt-get install kafkacat && sudo apt-get install pv
+# run the script
+./python-json-producer.sh
+```
+Should see ...
+```
+ubuntu@ip-172-31-16-46:~/nov-3/CSCIE88-BDP-2022/week9_flink/python$ ./python-json-producer.sh 
+26.2KiB 0:00:12 [2.16KiB/s] [                              <=>                                                                                                   ] 
+```
+You can check that messages are being published to the topic with 
+```
+docker exec broker1 kafka-console-consumer --topic p3_input --bootstrap-server localhost:9092
+```
+### 3. Running the python program and inspecting the results
+Connect to the jobmanager instance (we do this because pyflink is installed in this image, if you did a local install of pyflink this step is not necessary)
+```
+docker exec -it jobmanager bash
+```
+Run the python code (locally)
+```
+cd /flink-data
+python p3_kafka-source-example.py 
+```
+should see ...
+```
+root@jobmanager:/flink-data# python p3_kafka-source-example.py 
+
+Source Schema
+(
+  `uuid` STRING,
+  `eventTimestamp` STRING,
+  `url` STRING,
+  `userid` STRING,
+  `country` STRING,
+  `uaBrowser` STRING,
+  `uaOs` STRING,
+  `responseCode` STRING,
+  `ttfb` STRING,
+  `proctime` TIMESTAMP_LTZ(3) NOT NULL *PROCTIME* AS PROCTIME()
+)
+
+Process Sink Schema
+(
+  `uaOs` STRING,
+  `window_end` TIMESTAMP(3) NOT NULL,
+  `cnt` BIGINT NOT NULL
+)
+```
+You can check what values are being written to the output topic with 
+```
+docker exec broker1 kafka-console-consumer --topic p3_output --bootstrap-server localhost:9092
+```
+eg.
+```
+ubuntu@ip-172-31-16-46:~$ docker exec broker1 kafka-console-consumer --topic p3_output --bootstrap-server localhost:9092
+{"uaOs":"IOS","window_end":"2022-11-03 20:51:45","cnt":13}
+{"uaOs":"windows","window_end":"2022-11-03 20:51:45","cnt":9}
+{"uaOs":"Android","window_end":"2022-11-03 20:51:45","cnt":7}
+{"uaOs":"Linux","window_end":"2022-11-03 20:51:45","cnt":7}
+{"uaOs":"Mac","window_end":"2022-11-03 20:51:45","cnt":12}
+{"uaOs":"windows","window_end":"2022-11-03 20:51:50","cnt":10}
+{"uaOs":"Android","window_end":"2022-11-03 20:51:50","cnt":12}
+{"uaOs":"IOS","window_end":"2022-11-03 20:51:50","cnt":8}
+{"uaOs":"Mac","window_end":"2022-11-03 20:51:50","cnt":9}
+{"uaOs":"Linux","window_end":"2022-11-03 20:51:50","cnt":10}
+```
+ 
+
+
+
+ 
 
 ## (Optional) Building the pyflink image
 
