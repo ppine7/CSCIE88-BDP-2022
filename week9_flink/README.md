@@ -392,6 +392,33 @@ docker exec -it jobmanager bash
 docker exec broker1 kafka-console-consumer --topic p2_output --bootstrap-server localhost:9092
 ```
 
+## Running and testing the P3 example python program
+In order to test and run the p3_flink-kafka-python.py program we will follow this sequence. 
+1. Copy the program so we can run it from our docker image (if you have installed your own pyflink environment this step is not required)
+2. Setup to produce json kafka messages (either sending individual messages or running a script to produce them).
+3. Running our python program and inspecting the results
+
+### 1. Copy the program
+```
+# from the week9_flink directory
+cp python/p3_kafka-source-example.py docker/flink-data
+```
+### 2. Generate test messages on the kafka topic
+- Option 1: Create messages manually by running the kafka-console-producer
+```
+docker exec broker1 kafka-console-producer --topic p3_input --bootstrap-server localhost:9092
+```
+Then copy and paste json messages. This is useful for testing as you can edit the messages to test with different values. For sample input review the files in the /week10_ksql/logs_json folder
+- Option 2: Generate the messages from a json input file.
+A script 'python-json-producer.sh' is provided which will read one of the json logs file into the topic 'p3_input'. You can edit the script too change the file, message send rate, topic etc.
+```
+# install utilities
+sudo apt-get install kafkacat && sudo apt-get install pv
+# run the script
+./python-json-producer.sh
+```
+ 
+ 
 
 ## (Optional) Building the pyflink image
 
