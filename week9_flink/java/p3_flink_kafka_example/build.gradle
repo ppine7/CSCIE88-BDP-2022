@@ -26,7 +26,7 @@ dependencies {
 
 group = 'cscie88'
 version = '1.0-SNAPSHOT'
-description = 'p2_flink_kafka_test'
+description = 'p3_flink_kafka_test'
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 publishing {
