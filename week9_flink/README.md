@@ -422,7 +422,67 @@ Should see ...
 ubuntu@ip-172-31-16-46:~/nov-3/CSCIE88-BDP-2022/week9_flink/python$ ./python-json-producer.sh 
 26.2KiB 0:00:12 [2.16KiB/s] [                              <=>                                                                                                   ] 
 ```
+You can check that messages are being published to the topic with 
+```
+docker exec broker1 kafka-console-consumer --topic p3_input --bootstrap-server localhost:9092
+```
+### 3. Running the python program and inspecting the results
+Connect to the jobmanager instance (we do this because pyflink is installed in this image, if you did a local install of pyflink this step is not necessary)
+```
+docker exec -it jobmanager bash
+```
+Run the python code (locally)
+```
+cd /flink-data
+python p3_kafka-source-example.py 
+```
+should see ...
+```
+root@jobmanager:/flink-data# python p3_kafka-source-example.py 
+
+Source Schema
+(
+  `uuid` STRING,
+  `eventTimestamp` STRING,
+  `url` STRING,
+  `userid` STRING,
+  `country` STRING,
+  `uaBrowser` STRING,
+  `uaOs` STRING,
+  `responseCode` STRING,
+  `ttfb` STRING,
+  `proctime` TIMESTAMP_LTZ(3) NOT NULL *PROCTIME* AS PROCTIME()
+)
+
+Process Sink Schema
+(
+  `uaOs` STRING,
+  `window_end` TIMESTAMP(3) NOT NULL,
+  `cnt` BIGINT NOT NULL
+)
+```
+You can check what values are being written to the output topic with 
+```
+docker exec broker1 kafka-console-consumer --topic p3_output --bootstrap-server localhost:9092
+```
+eg.
+```
+ubuntu@ip-172-31-16-46:~$ docker exec broker1 kafka-console-consumer --topic p3_output --bootstrap-server localhost:9092
+{"uaOs":"IOS","window_end":"2022-11-03 20:51:45","cnt":13}
+{"uaOs":"windows","window_end":"2022-11-03 20:51:45","cnt":9}
+{"uaOs":"Android","window_end":"2022-11-03 20:51:45","cnt":7}
+{"uaOs":"Linux","window_end":"2022-11-03 20:51:45","cnt":7}
+{"uaOs":"Mac","window_end":"2022-11-03 20:51:45","cnt":12}
+{"uaOs":"windows","window_end":"2022-11-03 20:51:50","cnt":10}
+{"uaOs":"Android","window_end":"2022-11-03 20:51:50","cnt":12}
+{"uaOs":"IOS","window_end":"2022-11-03 20:51:50","cnt":8}
+{"uaOs":"Mac","window_end":"2022-11-03 20:51:50","cnt":9}
+{"uaOs":"Linux","window_end":"2022-11-03 20:51:50","cnt":10}
+```
  
+
+
+
  
 
 ## (Optional) Building the pyflink image
