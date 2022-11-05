@@ -72,7 +72,8 @@ services:
     networks:
       - lab9-demo
     volumes:
-    # for windows change this to the full path of your docker directory because windows does not define the $PWD directory
+    # for windows change this to the full path of your docker directory because windows does not define the $PWD variable
+    # eg.  C:/Users/..../week9_flink/docker/flink-data:/flink-data
     - $PWD/flink-data:/flink-data
 
   taskmanager:
@@ -93,5 +94,6 @@ services:
     networks:
       - lab9-demo
     volumes:
-      # for windows change this to the full path of your docker directory because windows does not define the $PWD directory
+      # for windows change this to the full path of your docker directory because windows does not define the $PWD variable
+      # C:/Users/..../week9_flink/docker/flink-data:/flink-data
       - $PWD/flink-data:/flink-data
