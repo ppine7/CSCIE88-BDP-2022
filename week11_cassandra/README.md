@@ -11,7 +11,7 @@ Topics
 - [Python API](https://docs.datastax.com/en/developer/python-driver/3.25/api/)
 - [Java Quickstart](https://docs.datastax.com/en/developer/java-driver/4.3/manual/core/)
 - [Java API](https://docs.datastax.com/en/developer/java-driver/4.3/)
-
+- [CQL Aggregate Functions](https://docs.datastax.com/en/dse/6.0/cql/cql/cql_reference/cqlAggregates.html)
 
 ## Starting a Cassandra cluster using docker
 I was unable to get cassandra working well with docker-compose so we are going to start a cassandra cluster using individual docker commands. 
