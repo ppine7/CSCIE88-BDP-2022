@@ -75,4 +75,32 @@ Having started the cassandra cluster (see above), install the python cassandra d
 ```
 pip install cassandra-driver
 ```
+- Review the source code for the example [key-example.py](python/key-example.py)
+- run the example with 
+```
+cd python
+python3 key-example.py
+```
+Should see output similar to 
+```
+2022-11-06 21:11:14,146 [INFO] root: inserting row 0
+2022-11-06 21:11:14,149 [INFO] root: inserting row 1
+2022-11-06 21:11:14,151 [INFO] root: inserting row 2
+2022-11-06 21:11:14,153 [INFO] root: inserting row 3
+2022-11-06 21:11:14,155 [INFO] root: inserting row 4
+2022-11-06 21:11:14,156 [INFO] root: inserting row 5
+2022-11-06 21:11:14,158 [INFO] root: inserting row 6
+2022-11-06 21:11:14,159 [INFO] root: inserting row 7
+2022-11-06 21:11:14,161 [INFO] root: inserting row 8
+2022-11-06 21:11:14,164 [INFO] root: inserting row 9
+2022-11-06 21:11:14,165 [INFO] root: key        col1    col2
+2022-11-06 21:11:14,165 [INFO] root: ---        ----    ----
+2022-11-06 21:11:14,178 [WARNING] cassandra.protocol: Server warning: Aggregation query used without partition key
+2022-11-06 21:11:14,178 [INFO] root: dave       2022-11-06 00:00:00     57.780000000000001580957587066222913563251495361328125
+2022-11-06 21:11:14,179 [INFO] root: archana    2022-11-06 00:00:00     109.78000000000000824229573481716215610504150390625
+2022-11-06 21:11:14,179 [INFO] root: ashwin     2022-11-06 00:00:00     72.2399999999999948840923025272786617279052734375
+2022-11-06 21:11:14,179 [INFO] root: mary       2022-11-06 00:00:00     22.9500000000000010658141036401502788066864013671875
+2022-11-06 21:11:14,179 [INFO] root: john       2022-11-06 00:00:00     149.930000000000003268496584496460855007171630859375
+ubuntu@ip-172-31-35-248:~/CSCIE88-BDP-2022/week11_cassandra/python$ 
+```
 
