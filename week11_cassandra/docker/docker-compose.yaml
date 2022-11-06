@@ -1,0 +1,67 @@
+version: '2'
+
+networks:
+  cnet:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.1.0.0/24
+         gateway: 10.1.0.1
+
+services:
+  cassandra-node1:
+    # image: bitnami/cassandra:latest
+    image: cassandra:latest
+    hostname: cassandra-node1
+    container_name: cassandra-node1
+    # ports:
+    #   - "9042:9042"
+    #   - "7000:7000"
+    #   - "7001:7001"
+
+    environment:
+      - CASSANDRA_CLUSTER_NAME=cassandra-cluster
+      - CASSANDRA_BROADCAST_ADDRESS=10.1.0.11
+      - CASSANDRA_HOST=cassandra-node1
+      - CASSANDRA_SEEDS=cassandra-node1
+      - CASSANDRA_PASSWORD_SEEDER=yes
+      - MAX_HEAP_SIZE=4G
+      - HEAP_NEWSIZE=200M
+    networks:
+      cnet:
+        ipv4_address: 10.1.0.11
+
+  cassandra-node2:
+    # image: bitnami/cassandra:latest
+    image: cassandra:latest
+    
+    hostname: cassandra-node2
+    container_name: cassandra-node2
+
+    environment:
+      - CASSANDRA_CLUSTER_NAME=cassandra-cluster
+      - CASSANDRA_HOST=cassandra-node2
+      - CASSANDRA_SEEDS=10.1.0.11
+      - MAX_HEAP_SIZE=4G
+      - HEAP_NEWSIZE=200M
+    networks:
+      cnet:
+        ipv4_address: 10.1.0.12
+
+  cassandra-node3:
+    # image: bitnami/cassandra:latest
+    image: cassandra:latest
+    
+    hostname: cassandra-node3
+    container_name: cassandra-node3
+
+    environment:
+      - CASSANDRA_CLUSTER_NAME=cassandra-cluster
+      - CASSANDRA_HOST=cassandra-node3
+      - CASSANDRA_SEEDS=10.1.0.11
+      - MAX_HEAP_SIZE=4G
+      - HEAP_NEWSIZE=200M
+      # - CASSANDRA_PASSWORD=password123
+    networks:
+      cnet:
+        ipv4_address: 10.1.0.13
