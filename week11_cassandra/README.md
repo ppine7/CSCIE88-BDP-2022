@@ -51,3 +51,21 @@ UN  172.19.0.2  274.64 KiB  16      67.2%             c88d353a-4be5-4d9f-987f-57
 UN  172.19.0.4  299.83 KiB  16      73.9%             37dcb4dc-ef8e-492b-be05-a80062a81930  rack1
 UN  172.19.0.3  303.36 KiB  16      58.9%             b2a1a4e6-fd0f-4842-aea9-21fc2c1d9ec9  rack1
 ```
+
+## Running cql commands in in cqlsh
+You can access the cqlsh cli utility by running 
+```
+docker exec -it node1 cqlsh
+```
+- to make sure its working properly try running this command
+```
+SELECT cluster_name, listen_address FROM system.local;
+```
+Should see something like 
+```
+cqlsh> SELECT cluster_name, listen_address FROM system.local;
+
+ cluster_name | listen_address
+--------------+----------------
+ Test Cluster |     172.19.0.2
+```
