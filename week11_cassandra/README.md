@@ -9,6 +9,7 @@ Topics
 
 - [Getting Started with the Python API](https://docs.datastax.com/en/developer/python-driver/3.25/getting_started/)
 - [Python API](https://docs.datastax.com/en/developer/python-driver/3.25/api/)
+- [Java Quickstart](https://docs.datastax.com/en/developer/java-driver/4.3/manual/core/)
 - [Java API](https://docs.datastax.com/en/developer/java-driver/4.3/)
 
 
