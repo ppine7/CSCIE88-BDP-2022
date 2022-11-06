@@ -9,6 +9,8 @@ Topics
 
 - [Getting Started with the Python API](https://docs.datastax.com/en/developer/python-driver/3.25/getting_started/)
 - [Python API](https://docs.datastax.com/en/developer/python-driver/3.25/api/)
+- [Java API](https://docs.datastax.com/en/developer/java-driver/4.3/)
+
 
 ## Starting a Cassandra cluster using docker
 I was unable to get cassandra working well with docker-compose so we are going to start a cassandra cluster using individual docker commands. 
