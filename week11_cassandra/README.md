@@ -69,3 +69,10 @@ cqlsh> SELECT cluster_name, listen_address FROM system.local;
 --------------+----------------
  Test Cluster |     172.19.0.2
 ```
+
+## Running the example python program
+Having started the cassandra cluster (see above), install the python cassandra driver with 
+```
+pip install cassandra-driver
+```
+
