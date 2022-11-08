@@ -116,7 +116,7 @@ docker exec node1 nodetool status
 ```
 
 tablestats
-- # of partitions
+- number of partitions
 ```
 docker exec node1 nodetool tablestats testkeyspace.payment_table
 
