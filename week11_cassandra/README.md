@@ -5,7 +5,7 @@ Topics
 - Running cql commands in in cqlsh
 - Python code walk through
 
-## Links
+## Useful Links
 
 - [Basic Rules of Cassandra Data Modelling](https://www.datastax.com/blog/basic-rules-cassandra-data-modeling)
 - [Getting Started with the Python API](https://docs.datastax.com/en/developer/python-driver/3.25/getting_started/)
