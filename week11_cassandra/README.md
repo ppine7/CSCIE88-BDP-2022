@@ -106,3 +106,19 @@ Should see output similar to
 ubuntu@ip-172-31-35-248:~/CSCIE88-BDP-2022/week11_cassandra/python$ 
 ```
 
+
+## Useful nodetool commands
+
+status
+- cluster status
+```
+docker exec node1 nodetool status
+```
+
+tablestats
+- # of partitions
+```
+docker exec node1 nodetool tablestats testkeyspace.payment_table
+
+```
+
