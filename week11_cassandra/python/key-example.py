@@ -4,6 +4,8 @@ import logging
 import uuid
 import random
 from datetime import date
+from datetime import timedelta
+from datetime import datetime
 
 
 log = logging.getLogger()
@@ -20,11 +22,11 @@ from cassandra.util import Date
 KEYSPACE = "testkeyspace"
 
 # for testing, creates a payment tuple with random values
-names = ["dave","mary","ashwin","john","archana","akira"]
+names = ["dave","mary","ashwin"] #,"john","archana","akira"]
 def make_payment():
-    name = names[random.randrange(0,len(names)-1)]
-    # dt = Date(2022,11,random.randrange(1,7))
-    dt = date.today()
+    name = names[random.randrange(0,len(names)-1)]   
+    dt = date.today() - timedelta(days=random.randint(1,7))
+    # dt = datetime.now() - timedelta(seconds=random.randint(1,5000))
     uuid_ = str(uuid.uuid4())
     amt = round(random.uniform(0, 1) * 100,2)
     return (name,dt,uuid_,amt)
@@ -58,7 +60,7 @@ def main():
             dt timestamp,
             uuid text,
             amt decimal,
-            PRIMARY KEY (name,dt,uuid)
+            PRIMARY KEY ((name,dt),uuid)
         )
         """)
 
@@ -74,15 +76,16 @@ def main():
         """)
 
     # insert rows
-    for i in range(10):
+    for i in range(1000):
         log.info("inserting row %d" % i)
         pmt = make_payment()
         session.execute(prepared.bind(pmt))
 
     # query results, aggregate (sum) amt by name and date (dt)
-    future = session.execute_async("SELECT name, dt, sum(amt) FROM payment_table group by name, dt")
-    log.info("key\tcol1\tcol2")
-    log.info("---\t----\t----")
+    future = session.execute_async( \
+    "SELECT name, dt, sum(amt) FROM payment_table group by name, dt")
+
+    log.info("Results...")
 
     try:
         rows = future.result()
@@ -96,7 +99,7 @@ def main():
         log.info('\t'.join(row))
 
     # delete the keyspace when done
-    session.execute("DROP KEYSPACE " + KEYSPACE)
+    # session.execute("DROP KEYSPACE " + KEYSPACE)
 
 if __name__ == "__main__":
     main()
