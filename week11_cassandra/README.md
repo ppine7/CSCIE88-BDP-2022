@@ -121,4 +121,11 @@ tablestats
 docker exec node1 nodetool tablestats testkeyspace.payment_table
 
 ```
+getendpoints
+- Provides the IP addresses or names of replicas that own the partition key.
+```
+docker exec node1 nodetool getendpoints testkeyspace payment_table dave
+172.19.0.2
+172.19.0.4
+```
 
