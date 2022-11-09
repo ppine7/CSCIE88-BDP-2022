@@ -8,6 +8,7 @@ Topics
 ## Useful Links
 
 - [Basic Rules of Cassandra Data Modelling](https://www.datastax.com/blog/basic-rules-cassandra-data-modeling)
+- [Cassandra Partition Key, Composite Key, and Clustering Key](https://www.baeldung.com/cassandra-keys)
 - [nodetool docs](https://docs.datastax.com/en/archived/cassandra/3.0/cassandra/tools/toolsNodetool.html)
 - [Getting Started with the Python API](https://docs.datastax.com/en/developer/python-driver/3.25/getting_started/)
 - [Python API](https://docs.datastax.com/en/developer/python-driver/3.25/api/)
