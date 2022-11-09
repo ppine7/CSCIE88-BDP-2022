@@ -3,7 +3,6 @@ import os
 from pyflink.datastream import StreamExecutionEnvironment
 from pyflink.table import StreamTableEnvironment, EnvironmentSettings
 
-
 # Converting between datastream and table api in pyflink
 # https://nightlies.apache.org/flink/flink-docs-stable/docs/dev/table/data_stream_api/
 
