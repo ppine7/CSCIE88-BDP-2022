@@ -8,12 +8,14 @@ Topics
 ## Useful Links
 
 - [Basic Rules of Cassandra Data Modelling](https://www.datastax.com/blog/basic-rules-cassandra-data-modeling)
+- [Cassandra Partition Key, Composite Key, and Clustering Key](https://www.baeldung.com/cassandra-keys)
 - [nodetool docs](https://docs.datastax.com/en/archived/cassandra/3.0/cassandra/tools/toolsNodetool.html)
 - [Getting Started with the Python API](https://docs.datastax.com/en/developer/python-driver/3.25/getting_started/)
 - [Python API](https://docs.datastax.com/en/developer/python-driver/3.25/api/)
 - [Java Quickstart](https://docs.datastax.com/en/developer/java-driver/4.3/manual/core/)
 - [Java API](https://docs.datastax.com/en/developer/java-driver/4.3/)
 - [CQL Aggregate Functions](https://docs.datastax.com/en/dse/6.0/cql/cql/cql_reference/cqlAggregates.html)
+- [Allow filtering explained](https://www.datastax.com/blog/allow-filtering-explained)
 
 ## Starting a Cassandra cluster using docker
 I was unable to get cassandra working well with docker-compose so we are going to start a cassandra cluster using individual docker commands. 
@@ -77,11 +79,11 @@ Having started the cassandra cluster (see above), install the python cassandra d
 ```
 pip install cassandra-driver
 ```
-- Review the source code for the example [key-example.py](python/key-example.py)
+- Review the source code for the example [key-example.py](python/lab10-example.py)
 - run the example with 
 ```
 cd python
-python3 key-example.py
+python3 lab10-example.py
 ```
 Should see output similar to 
 ```
@@ -121,4 +123,21 @@ tablestats
 docker exec node1 nodetool tablestats testkeyspace.payment_table
 
 ```
+getendpoints
+- Provides the IP addresses or names of replicas that own the partition key.
+```
+docker exec node1 nodetool getendpoints testkeyspace payment_table dave
+172.19.0.2
+172.19.0.4
+```
 
+## Other cassandra commands
+
+**Copy Command**
+Use to load data from a file into Cassandra eg. 
+```
+copy lab10.network_traffic (clock,node_id,bits_sent,bits_received)
+... from '/home/centos/lab10.csv'
+... with header = FALSE
+... and DATETIMEFORMAT='%Y-%m-%d %H:%M:%S';
+```
