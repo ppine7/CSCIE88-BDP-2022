@@ -19,12 +19,12 @@ from cassandra.cluster import Cluster
 from cassandra.query import SimpleStatement
 from cassandra.util import Date
 
-KEYSPACE = "testkeyspace"
+KEYSPACE = "ks"
 
 # for testing, creates a payment tuple with random values
 names = ["dave","mary","ashwin"] #,"john","archana","akira"]
 def make_payment():
-    name = names[random.randrange(0,len(names)-1)]   
+    name = names[random.randrange(0,len(names))]   
     dt = date.today() - timedelta(days=random.randint(1,7))
     # dt = datetime.now() - timedelta(seconds=random.randint(1,5000))
     uuid_ = str(uuid.uuid4())
@@ -55,14 +55,16 @@ def main():
     # create the table
     log.info("creating table...")
     session.execute("""
-        CREATE TABLE payment_table (
+        CREATE TABLE payments (
             name text,
             dt timestamp,
             uuid text,
             amt decimal,
-            PRIMARY KEY ((name,dt),uuid)
+            PRIMARY KEY (name,dt,uuid)
         )
         """)
+
+            # PRIMARY KEY (name,dt,uuid)
 
     # query = SimpleStatement("""
     #     INSERT INTO mytable (thekey, col1, col2)
@@ -71,19 +73,19 @@ def main():
 
     # prepared statement query to insert values
     prepared = session.prepare("""
-        INSERT INTO payment_table (name, dt, uuid,amt)
+        INSERT INTO payments (name, dt, uuid,amt)
         VALUES (?, ?, ?, ?)
         """)
 
     # insert rows
-    for i in range(1000):
+    for i in range(100):
         log.info("inserting row %d" % i)
         pmt = make_payment()
         session.execute(prepared.bind(pmt))
 
     # query results, aggregate (sum) amt by name and date (dt)
     future = session.execute_async( \
-    "SELECT name, dt, sum(amt) FROM payment_table group by name, dt")
+    "SELECT name, dt, sum(amt) FROM payments group by name, dt")
 
     log.info("Results...")
 
