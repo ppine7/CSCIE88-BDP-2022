@@ -129,3 +129,13 @@ docker exec node1 nodetool getendpoints testkeyspace payment_table dave
 172.19.0.4
 ```
 
+## Other cassandra commands
+
+**Copy Command**
+Use to load data from a file into Cassandra eg. 
+```
+copy lab10.network_traffic (clock,node_id,bits_sent,bits_received)
+... from '/home/centos/lab10.csv'
+... with header = FALSE
+... and DATETIMEFORMAT='%Y-%m-%d %H:%M:%S';
+```
