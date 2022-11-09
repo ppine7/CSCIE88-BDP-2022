@@ -79,11 +79,11 @@ Having started the cassandra cluster (see above), install the python cassandra d
 ```
 pip install cassandra-driver
 ```
-- Review the source code for the example [key-example.py](python/key-example.py)
+- Review the source code for the example [key-example.py](python/lab10-example.py)
 - run the example with 
 ```
 cd python
-python3 key-example.py
+python3 lab10-example.py
 ```
 Should see output similar to 
 ```
